@@ -8,8 +8,8 @@
 4. The scooping will be executed only when system is active, otherwise it will print error message
 */
 
-ezButton button1(2);                                   // Button 1 for activation/parking
-ezButton button2(3);                                   // Button 2 for scooping action
+ezButton start_stop(2);                                   // Button start_stop for activation/parking
+ezButton pause_resume(3);                                   // Button pause_resume for scooping action
 
 Servo servo1;                                          //Creating servo objects inside the class Servo
 Servo servo2;
@@ -19,9 +19,19 @@ Servo servo3;
   unsigned int count1 = 0;                              //Initializing count1 & count2 
   unsigned int count2 = 0;                                
 
-  int activAngles [4];
+  int activAngles [4] = {0, 0, 0, 0};
 
-void setup() {
+  int angle1 = 0;
+  int angle2 = 0;
+  int angle3 = 0;                                       // initializing servo angles
+//  int angle4 = 0;
+
+  bool scoopingAction = false;
+  bool systempark = false
+  bool systemActive = false
+
+void setup() 
+{
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial.println("Power ON");                            //Display status: "Power ON"
@@ -32,21 +42,10 @@ void setup() {
   button1.setCountMode(COUNT_FALLING);                   // Button press action will be detected when button is released from pressed
   button2.setCountMode(COUNT_FALLING);
 
-  bool scoopingAction = false;
-  bool systempark = false
-  bool systemActive = false
-
   servo1.attach(5);                                      //Signal wire of servo-1 is connected to pin 5
   servo2.attach(6);                                      //Signal wire of servo-2 is connected to pin 6
   servo3.attach(9);                                      //Signal wire of servo-3 is connected to pin 9
 //  servo4.attach(10);                                     //Signal wire of servo-4 is connected to pin 10
-
-  int angle1 = 0;
-  int angle2 = 0;
-  int angle3 = 0;                                       // initializing servo angles
-//  int angle4 = 0;
-
-
 
   delay(1000);
   Serial.println("System initialized");
@@ -54,65 +53,35 @@ void setup() {
 }
 
 void loop() {
-  button1.loop();
-  button2.loop();
 
-  if (button1.isPressed())
-    {
-      count1 += 1;
-    }
-  if (button2.isPressed() && count1 == 1)
-    {
-      count2 += 1;
-    }
+    int buttonState = buttonStatus ();
 
-  if (count1 == 1)
+    switch (buttonState)
     {
-      Serial.println("Activating system. Please wait...");
-        sysActiv();
-      Serial.println("System activated");
-      break;
+        case 1:
+            start_Stop_Handler();
+            break;
+
+        case 2:
+            pause_Play_Handler();
+            break;
+        
+        default:
+            parking();
+            break;
     }
 
-  if (count1 == 2)
-    {
-      Serial.println("Parking the system. Please wait...");
-      parking();
-      delay(1000);
-        count1 = 0;
-      Serial.println("Parked");
-      break;
-    }
-  
-  if (count2 == 1 && count1 == 1)
-    {
-      Serial.println("Scooping");
-      scooping();
-        scoopingAction = true;
-        count2 = 0;
-      Serial.println("Scooping done");
-      break;
-    }
-
- /* if (count3 == 1 && scoopingAction == true)
-    {
-      Serial.println("Pouring materials");
-      pour();
-      Serial.println("Pouring success");
-      break;
-    }*/
-  
 
 }
 
-void sysActiv ()
+int sysActiv()
 {
     int max_pos_angle1 = 90;              // Defining experimented positions of the servos  
     int max_pos_angle2 = 120;             // At the active position
     int max_pos_angle3 = 105;             // Change here only if needed
 
   // Checking servo positions if those are already in the active positions
-    if (angle1 != 90 || angle2 != 120 || angle3 != 105)     
+    if (angle1 != max_pos_angle1 || angle2 != max_pos_angle2 || angle3 != max_pos_angle3)     
     {
 
         for (int b2 = angle2; b2 <= 90; b2++)
@@ -139,55 +108,80 @@ void sysActiv ()
           delay(20);
         }
 
-      activAngles[0] = servo1.read();
-      activAngles[1] = servo2.read();
-      activAngles[2] = servo3.read();
+        angle1 = servo1.read();
+        angle2 = servo2.read();
+        angle3 = servo3.read();
     }
 
     else
     {
-      parking();
+      Serial.println("System is already in active position");
     }
+
+    return angle1;
+    return angle2;
+    return angle3;
 }
-void parking ()         //Call this function when system is going to park
+
+int parking ()         //Call this function when system is going to park
   {
-    for(int a1 = angle1; a1 >= 0; a1--)
+    int park_angle1 = 0;       // Defining experimented angle values at park position
+    int park_angle2 = 0;       // Change angle values here if needed
+    int park_angle3 = 180;
+
+ // Checking servo angles wheather those are already in the park angle   
+    if (angle1 != park_angle1 || angle2 != park_angle2 || angle3 != park_angle3)
     {
-      servo1.write(a1);
-      delay(50);
+        for(int a1 = angle1; a1 >= park_angle1 ; a1--)
+        {
+            servo1.write(a1);
+            delay(20);
+        }
+
+        if (angle2 > 90)
+        {
+            for (int a2 = angle2; a2 >= 90; a2--)
+                {
+                    servo2.write(a2);
+                    delay(20);
+                }
+        }
+        else
+        {
+            for (int a2 = angle2; a2 <= 90; a2++)
+                {
+                    servo2.write(a2);
+                    delay(20);
+                }
+        }
+            
+        for (int a3 = angle3; a3 <= park_angle3; a3++)
+        {
+            servo3.write(a3);
+                delay(20);
+        }
+
+        for (int a2 = 90; a2 >= park_angle2; a2--)
+        {
+            servo2.write(a2);
+            delay(20);
+        }
+
+        Serial.println("System is parked");
+
+        angle1 = servo1.read();
+        angle2 = servo2.read();
+        angle3 = servo3.read();
     }
 
-    for (int a2 = angle2; a2 >= 90; a2--)
+    else
     {
-      servo2.write(a2);
-      delay(50);
-    }
-    
-    if (angle3 > 90 )
-    {
-      for (int a3 = angle3; a3 >= 90; a3--)
-      {
-      servo3.write(a3);
-      delay(50);
-      }
-    }
-    else if(angle3 < 90)
-    {
-      for (int a3 = angle3; a3 <= 90; a3++)
-      {
-      servo3.write(a3);
-      delay(50);
-      }
+        Serial.println("System is already in park position");
     }
 
-    for (int a2 = 90; a2 >= 0; a2--)
-    {
-      servo2.write(a2);
-      delay(50);
-    }
-    
-    systempark = true;
-    
+    return angle1;
+    return angle2;
+    return angle3;
   }
 
 void scooping ()
@@ -226,3 +220,62 @@ void pour ()
       servo1.write(q1);
     }
   }
+
+// Return button status as per the button is pressed
+int buttonStatus ()
+  {
+    int status = 0;
+
+    start_stop.loop();
+    pause_play.loop();
+    
+    if (start_stop.isPressed())
+    {
+        status = 1;
+    }
+
+    if (pause_play.isPressed())
+    {
+        status = 2;
+    }
+
+    return status;
+  }
+
+// Activate-Deactivate handler
+// Directly called into switch case in void loop
+void start_Stop_Handler()              
+{
+    systemActive =!systemActive;       // Toggle system active/deactive state 
+
+    if (systemActive == true)
+    {
+        sysActiv();
+    }   
+    else
+    {
+        parking();
+    }
+}
+
+// Scooping-pouring handler
+// Directly called in switch case in void loop
+// Change here according to the functionality 
+void scooping_Handler()
+{
+
+    if (systemActive == true)
+    {
+        scoopingAction =!scoopingAction;
+
+        if (scoopingAction == true)
+        {
+            scooping();
+            pour();
+        }
+        else
+        {
+            sysActiv();
+        }
+    }
+}
