@@ -191,7 +191,7 @@ int scooping_angle3 = 90;
 
     if (systemActive == true)           // Check if the system is active
     {
-         if (lastAngles[0] == scooping_angle1 && lastAngles[1] != scooping_angle2 && lastAngles[2] == scooping_angle3)
+         if (lastAngles[0] == scooping_angle1 && lastAngles[1] = scooping_angle2 && lastAngles[2] == scooping_angle3)
              {
                  for (int c3 = scooping_angle3; c3 >= scoop_arm_angle_min; c3--)
                  {
@@ -212,38 +212,38 @@ int scooping_angle3 = 90;
     }
   }  
 
-void reverse_scooping ()
-  {
- // Scooping function is defined only for the scooping action.
- // The 3rd arm will only move for scooping of material.
- // For now there is no servo attached between 3rd arm and scoop.
- // If 4th servo is required, add it here along with thread.
-int r_scooping_angle1 = 90;           //these angles can change according to all the servo's angle at the beginning of the scoop
-int r_scooping_angle2 = 90;
-int r_scooping_angle3 = 90;
+// void reverse_scooping ()
+//   {
+//  // Scooping function is defined only for the scooping action.
+//  // The 3rd arm will only move for scooping of material.
+//  // For now there is no servo attached between 3rd arm and scoop.
+//  // If 4th servo is required, add it here along with thread.
+// int r_scooping_angle1 = 90;           //these angles can change according to all the servo's angle at the beginning of the scoop
+// int r_scooping_angle2 = 90;
+// int r_scooping_angle3 = 90;
 
-    if (systemActive == true)           // Check if the system is active
-    {
-         if (lastAngles[0] == r_scooping_angle1 && lastAngles[1] != r_scooping_angle2 && lastAngles[2] == r_scooping_angle3)
-             {
-                 for (int c3 = scooping_angle3; c3 >= scoop_arm_angle_min; c3--)
-                 {
-                     servo3.write(c3);
-                     delay(10);
-                  }
+//     if (systemActive == true)           // Check if the system is active
+//     {
+//          if (lastAngles[0] == r_scooping_angle1 && lastAngles[1] != r_scooping_angle2 && lastAngles[2] == r_scooping_angle3)
+//              {
+//                  for (int c3 = scooping_angle3; c3 >= scoop_arm_angle_min; c3--)
+//                  {
+//                      servo3.write(c3);
+//                      delay(10);
+//                   }
 
-                    scoopingAction =! scoopingAction;    // Toggle scoopingAction variable when scooping is done
-                    lastAngles[0] = servo1.read();
-                    lastAngles[1] = servo2.read();
-                    lastAngles[2] = servo3.read();
-    }
-     }
+//                     scoopingAction =! scoopingAction;    // Toggle scoopingAction variable when scooping is done
+//                     lastAngles[0] = servo1.read();
+//                     lastAngles[1] = servo2.read();
+//                     lastAngles[2] = servo3.read();
+//     }
+//      }
             
-    else
-    {
-      Serial.println("System is not active. Activate the system first");
-    }
-  }  
+//     else
+//     {
+//       Serial.println("System is not active. Activate the system first");
+//     }
+//   }  
 
 void pour ()
   {
