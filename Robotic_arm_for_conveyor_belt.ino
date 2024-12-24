@@ -185,9 +185,10 @@ void scooping ()
  // The 3rd arm will only move for scooping of material.
  // For now there is no servo attached between 3rd arm and scoop.
  // If 4th servo is required, add it here along with thread.
-int scooping_angle1 = 90;           //these angles can change according to all the servo's angle at the beginning of the scoop
-int scooping_angle2 = 90;
-int scooping_angle3 = 90;
+    int scooping_angle1 = 90;           //these angles can change according to all the servo's angle at the beginning of the scoop
+    int scooping_angle2 = 120;
+    int scooping_angle3 = 105;
+    int scoop_arm_angle_min = 15;
 
     if (systemActive == true)           // Check if the system is active
     {
@@ -247,7 +248,39 @@ int scooping_angle3 = 90;
 
 void pour ()
   {
-   int  
+   int pourAngle1= 90;
+   int pourAngle2 = 120;
+   int pourAngle3 = 15;
+      //pour mechanism begin if condition is matched here
+    if (lastAngles[0] == pourAngle1 && lastAngles[1] = pourAngle2 && lastAngles[2] == pourAngle3)
+    {
+      for (int i = pourAngle1; i>= parkingAngle1; i--)
+      {
+        servo1.write(i);
+        delay(10);
+      }
+
+      for(int j = pourAngle2; j<=150; j++)
+      {
+        servo2.write(i);
+        delay(10);
+      }
+
+      for( int k = pourAngle3 ; k<= 120; k++)
+      {
+        servo3.write(k);
+        delay(10);
+      }
+
+      // Returning to the scoop position
+
+       for (int i = parkingAngle1; i<= parkingAngle1; i--)
+      {
+        servo1.write(i);
+        delay(10);
+      }
+    }
+
   }
 
   void returnToActive ()
