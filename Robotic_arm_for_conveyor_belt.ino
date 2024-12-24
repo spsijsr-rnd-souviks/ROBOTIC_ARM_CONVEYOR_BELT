@@ -16,6 +16,22 @@ Servo servo2;
 Servo servo3;
 // Servo servo4;
 
+//Variables defining
+    int max_pos_angle1 = 90;              // Defining experimented positions of the servos  
+    int max_pos_angle2 = 120;             // At the active position
+    int max_pos_angle3 = 105;             // Change here only if needed
+
+    int park_angle1 = 0;       // Defining experimented angle values at park position
+    int park_angle2 = 0;       // Change angle values here if needed
+    int park_angle3 = 180;
+
+    int scooping_angle1 = 90;           //Defining experimented scooping angle at beginning
+    int scooping_angle2 = 120;            //Change angle values here if required
+    int scooping_angle3 = 105;
+    int scoop_arm_angle_min = 15;
+
+
+
   unsigned int count1 = 0;                              //Initializing count1 & count2 
   unsigned int count2 = 0;                                
 
@@ -76,9 +92,9 @@ void loop() {
 
 void sysActiv()
 {
-    int max_pos_angle1 = 90;              // Defining experimented positions of the servos  
-    int max_pos_angle2 = 120;             // At the active position
-    int max_pos_angle3 = 105;             // Change here only if needed
+    // int max_pos_angle1 = 90;              // Defining experimented positions of the servos  
+    // int max_pos_angle2 = 120;             // At the active position
+    // int max_pos_angle3 = 105;             // Change here only if needed
 
   // Checking servo positions if those are already in the active positions
     if (lastAngles[0] != max_pos_angle1 || lastAngles[1] != max_pos_angle2 || lastAngles[2] != max_pos_angle3)     
@@ -123,9 +139,9 @@ void sysActiv()
 
 void parking ()         //Call this function when system is going to park
   {
-    int park_angle1 = 0;       // Defining experimented angle values at park position
-    int park_angle2 = 0;       // Change angle values here if needed
-    int park_angle3 = 180;
+    // int park_angle1 = 0;       // Defining experimented angle values at park position
+    // int park_angle2 = 0;       // Change angle values here if needed
+    // int park_angle3 = 180;
 
  // Checking servo angles wheather those are already in the park angle   
     if (lastAngles[0] != park_angle1 || lastAngles[1] != park_angle2 || lastAngles[2] != park_angle3)
@@ -185,10 +201,10 @@ void scooping ()
  // The 3rd arm will only move for scooping of material.
  // For now there is no servo attached between 3rd arm and scoop.
  // If 4th servo is required, add it here along with thread.
-    int scooping_angle1 = 90;           //these angles can change according to all the servo's angle at the beginning of the scoop
-    int scooping_angle2 = 120;
-    int scooping_angle3 = 105;
-    int scoop_arm_angle_min = 15;
+    // int scooping_angle1 = 90;           //these angles can change according to all the servo's angle at the beginning of the scoop
+    // int scooping_angle2 = 120;
+    // int scooping_angle3 = 105;
+    // int scoop_arm_angle_min = 15;
 
     if (systemActive == true)           // Check if the system is active
     {
@@ -248,13 +264,18 @@ void scooping ()
 
 void pour ()
   {
-   int pourAngle1= 90;
-   int pourAngle2 = 120;
-   int pourAngle3 = 15;
+  //     int park_angle1 = 0;     //Pour angle at the beginning postion
+  //  int pourAngle1= 90;
+  //  int pourAngle2 = 120;
+  //  int pourAngle3 = 15;
+  
+    int max_pos_angle1 = 90;       
+    int max_pos_angle2 = 120;        
+    int max_pos_angle3 = 105;            
       //pour mechanism begin if condition is matched here
     if (lastAngles[0] == pourAngle1 && lastAngles[1] = pourAngle2 && lastAngles[2] == pourAngle3)
     {
-      for (int i = pourAngle1; i>= parkingAngle1; i--)
+      for (int i = pourAngle1; i>= park_angle1; i--)
       {
         servo1.write(i);
         delay(10);
