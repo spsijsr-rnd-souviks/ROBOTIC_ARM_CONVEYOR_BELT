@@ -275,7 +275,7 @@ void pour ()
       //pour mechanism begin if condition is matched here
     if (lastAngles[0] == pourAngle1 && lastAngles[1] = pourAngle2 && lastAngles[2] == pourAngle3)
     {
-      for (int i = pourAngle1; i>= park_angle1; i--)
+      for (int i = pourAngle1; i>= 90; i--)
       {
         servo1.write(i);
         delay(10);
@@ -295,11 +295,21 @@ void pour ()
 
       // Returning to the scoop position
 
-       for (int i = parkingAngle1; i<= parkingAngle1; i--)
+       for (int i = 0; i<= 90; i++) //servo 1 or arm 1 will move to 90 degree
       {
         servo1.write(i);
         delay(10);
       }
+        for (int j = 150; j>=120; j--)  // arm 2 will move from 150 degree to 120 degree
+        {
+          servo2.write(j);
+          delay(10);
+        }
+        for (int k = 120; k>=105; k--)  //arm 3 will move to its scooping postion
+        {
+          servo3.write(k);
+          delay(10);
+        }
     }
 
   }
