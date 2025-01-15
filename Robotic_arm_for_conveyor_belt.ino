@@ -9,7 +9,8 @@
 */
 
 ezButton start_stop(2);                                   // Button start_stop for activation/parking
-ezButton pause_resume(3);                                   // Button pause_resume for scooping action
+ezButton scoop_pour(3);                                   // Button pause_resume for scooping action
+ezButton emergency_stop(4);                               // Button emergency_stop for stopping the system in the middle of the operation  
 
 Servo servo1;                                          //Creating servo objects inside the class Servo
 Servo servo2;
@@ -17,37 +18,40 @@ Servo servo3;
 // Servo servo4;
 
 //Variables defining
-    int max_pos_angle1 = 90;              // Defining experimented positions of the servos  
-    int max_pos_angle2 = 120;             // At the active position
-    int max_pos_angle3 = 105;             // Change here only if needed
+    int activ_angle1 = 90;              // Defining experimented positions of the servos  
+    int activ_angle2 = 120;             // At the active position
+    int activ_angle3 = 105;             // Change here only if needed
 
-    int park_angle1 = 0;       // Defining experimented angle values at park position
-    int park_angle2 = 0;       // Change angle values here if needed
+    int park_angle1 = 0;                  // Defining experimented angle values at park position
+    int park_angle2 = 0;                  // Change angle values here if needed
     int park_angle3 = 180;
 
-    int scooping_angle1 = 90;           //Defining experimented scooping angle at beginning
-    int scooping_angle2 = 120;            //Change angle values here if required
-    int scooping_angle3 = 105;
-    int scoop_arm_angle_min = 15;
+//    int scooping_angle1 = 90;             //Defining experimented scooping angle at beginning
+//    int scooping_angle2 = 120;            //Change angle values here if required
+//    int scooping_angle3 = 105;
+    int scoop_arm_angle_max = 105;            //Experimented angle values of the scooping arm for scooping operation. 
+    int scoop_arm_angle_min = 15;             // Change here if needed  
+
+//    int pourAngle1= 90;                   //Defining experimented pouring angles
+//    int pourAngle2 = 120;                 //Change angle values here if required
+//    int pourAngle3 = 15;
 
 
 
-  unsigned int count1 = 0;                              //Initializing count1 & count2 
-  unsigned int count2 = 0;                                
+   unsigned int count1 = 0;                 //Initializing count1 & count2 
+   unsigned int count2 = 0;                                
 
-  int lastAngles[3] = {0, 0, 0};
+   int lastAngles[3] = {0, 0, 0};
 
-  int angle1 = 0;
-  int angle2 = 0;
-  int angle3 = 0;                                       // initializing servo angles
+   int angle1 = 0;
+   int angle2 = 0;
+   int angle3 = 0;                           // initializing servo angles
 //  int angle4 = 0;
 
-  int scoop_arm_angle_max = 105;      //Experimented angle values. Change here if needed
-  int scoop_arm_angle_min = 15;
-
   bool scoopingAction = false;
-  bool systempark = false
-  bool systemActive = false
+  bool systempark = false;
+  bool systemActive = false;
+  bool pouringStatus = false;
 
 void setup() 
 {
@@ -56,7 +60,8 @@ void setup()
   Serial.println("Power ON");                            //Display status: "Power ON"
 
   start_stop.setDebounceTime(50);                           //Set button debounce time 50 ms (custom) for false click protection
-  pause_resume.setDebounceTime(50);
+  scoop_pour.setDebounceTime(50);
+  emergency_stop.setDebounceTime(50);
 
   servo1.attach(5);                                      //Signal wire of servo-1 is connected to pin 5
   servo2.attach(6);                                      //Signal wire of servo-2 is connected to pin 6
@@ -82,6 +87,10 @@ void loop() {
             scooping_Handler();
             break;
         
+        case 3:
+            emergency_Handler();
+            break;
+
         default:
             parking();
             break;
@@ -97,7 +106,7 @@ void sysActiv()
     // int max_pos_angle3 = 105;             // Change here only if needed
 
   // Checking servo positions if those are already in the active positions
-    if (lastAngles[0] != max_pos_angle1 || lastAngles[1] != max_pos_angle2 || lastAngles[2] != max_pos_angle3)     
+    if (lastAngles[0] != activ_angle1 || lastAngles[1] != activ_angle2 || lastAngles[2] != activ_angle3)     
     {
 
         for (int b2 = lastAngles[1]; b2 <= 90; b2++)
@@ -106,19 +115,19 @@ void sysActiv()
           delay(20);
         }
 
-        for (int b3 = lastAngles[2]; b3 >= max_pos_angle3 ; b3--)
+        for (int b3 = lastAngles[2]; b3 >= activ_angle3 ; b3--)
         {
           servo3.write(b3); 
           delay(20);
         }
 
-        for (int b2 = 90; b2<=max_pos_angle2; b2++)
+        for (int b2 = 90; b2<=activ_angle2; b2++)
         {
           servo2.write(b2);
           delay(20);
         }
 
-        for (int b1 = lastAngles[0]; b1 <= max_pos_angle1 ; b1++)
+        for (int b1 = lastAngles[0]; b1 <= activ_angle1 ; b1++)
         {
           servo1.write(b1);
           delay(20);
@@ -133,7 +142,7 @@ void sysActiv()
 
     else
     {
-      Serial.println("System is already in active position");
+      Serial.println("An error occured");
     }
 }
 
@@ -190,7 +199,7 @@ void parking ()         //Call this function when system is going to park
 
     else
     {
-        Serial.println("System is already in park position");
+        Serial.println("An error occured");
     }
   }
 
@@ -208,19 +217,24 @@ void scooping ()
 
     if (systemActive == true)           // Check if the system is active
     {
-         if (lastAngles[0] == scooping_angle1 && lastAngles[1] = scooping_angle2 && lastAngles[2] == scooping_angle3)
+         if (lastAngles[0] == activ_angle1 && lastAngles[1] == activ_angle2 && lastAngles[2] == activ_angle3)
              {
-                 for (int c3 = scooping_angle3; c3 >= scoop_arm_angle_min; c3--)
+                Serial.println("System is ready for material scooping. Starting action...");
+                delay(500);
+
+                 for (int c3 = activ_angle3; c3 >= scoop_arm_angle_min; c3--)
                  {
                      servo3.write(c3);
-                     delay(10);
+                     delay(20);
                   }
+                    
+                  scoopingAction = true;        // Toggle scoopingAction variable when scooping is done
+                  Serial.println("Scooping Done");
 
-                    scoopingAction =! scoopingAction;    // Toggle scoopingAction variable when scooping is done
                     lastAngles[0] = servo1.read();
                     lastAngles[1] = servo2.read();
                     lastAngles[2] = servo3.read();
-    }
+              }
      }
             
     else
@@ -233,61 +247,52 @@ void scooping ()
 
 void pour ()
   {
-  //     int park_angle1 = 0;     //Pour angle at the beginning postion
+  //  int park_angle1 = 0;     //Pour angle at the beginning postion
   //  int pourAngle1= 90;
   //  int pourAngle2 = 120;
-  //  int pourAngle3 = 15;
-  
-    int max_pos_angle1 = 90;       
-    int max_pos_angle2 = 120;        
-    int max_pos_angle3 = 105;            
-      //pour mechanism begin if condition is matched here
-    if (lastAngles[0] == pourAngle1 && lastAngles[1] = pourAngle2 && lastAngles[2] == pourAngle3)
+  int intermediate_angle_arm2 = 90;
+    if(scoopingAction == true)
     {
-      for (int i = pourAngle1; i>= 90; i--)
-      {
-        servo1.write(i);
-        delay(10);
-      }
-
-      for(int j = pourAngle2; j<=150; j++)
-      {
-        servo2.write(i);
-        delay(10);
-      }
-
-      for( int k = pourAngle3 ; k<= 120; k++)
-      {
-        servo3.write(k);
-        delay(10);
-      }
-
-      // Returning to the scoop position
-
-       for (int i = 0; i<= 90; i++) //servo 1 or arm 1 will move to 90 degree
-      {
-        servo1.write(i);
-        delay(10);
-      }
-        for (int j = 150; j>=120; j--)  // arm 2 will move from 150 degree to 120 degree
+        Serial.println("Scooping done. Pouring now...");          
+      //pour mechanism begin if condition is matched here
+        if (lastAngles[0] == activ_angle1 && lastAngles[1] = activ_angle2 && lastAngles[2] == scoop_arm_angle_min)
         {
-          servo2.write(j);
-          delay(10);
-        }
-        for (int k = 120; k>=105; k--)  //arm 3 will move to its scooping postion
-        {
-          servo3.write(k);
-          delay(10);
+          for (int i = activ_angle1; i>= 0; i--)
+          {
+            servo1.write(i);
+            delay(20);
+          }
+
+          for(int j = activ_angle2; j >= intermediate_angle_arm2; j--)
+          {
+            servo2.write(j);
+            delay(10);
+          }
+
+          for( int k = scoop_arm_angle_min ; k <= activ_angle3; k++)
+          {
+            servo3.write(k);
+            delay(20);
+          }
+
+          for(int l = intermediate_angle_arm2; l <= activ_angle2; l++)
+          {
+            servo2.write(l);
+            delay(10);
+          }
+          
+          pouringStatus = true;
+          Serial.println("Pouring done");
         }
     }
-
   }
 
   void returnToActive ()
   {
-    for (int q1=0; q1<=90; q1++ )
+    for (int i = 90; i >= 0; i--)
     {
-      servo1.write(q1);
+      servo1.write(i);
+      delay(50);
     }
   }
 
@@ -297,16 +302,22 @@ int buttonStatus ()
     int status = 0;
 
     start_stop.loop();
-    pause_resume.loop();
+    scoop_pour.loop();
+    emergency_stop.loop();
     
     if (start_stop.isPressed())
     {
         status = 1;
     }
 
-    if (pause_play.isPressed())
+    if (scoop_pour.isPressed())
     {
         status = 2;
+    }
+
+    if (emergency_stop.isPressed())
+    {
+        status = 3;
     }
 
     return status;
@@ -336,16 +347,11 @@ void scooping_Handler()
 
     if (systemActive == true)
     {
-        scoopingAction =!scoopingAction;
+        
+      scooping();
+      pour();
 
-        if (scoopingAction == true)
-        {
-            scooping();
-            pour();
-        }
-        else
-        {
-            sysActiv();
-        }
     }
 }
+
+void emergency_handler()
