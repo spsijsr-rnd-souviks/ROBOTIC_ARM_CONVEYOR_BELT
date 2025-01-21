@@ -21,16 +21,19 @@ Servo servo3;
 
 //Variables defining
     int activ_angle1 = 140;              // Defining experimented positions of the servos  
-    int activ_angle2 = 135;             // At the active position
-    int activ_angle3 = 30;             // Change here only if needed
+    int activ_angle2 = 120;             // At the active position
+    int activ_angle3 = 60;
+    
+    int interim_angle2 = 45;             // Change here only if needed
+    int interim_pour_angle2 = 90;
 
     int park_angle1 = 0;                  // Defining experimented angle values at park position
     int park_angle2 = 0;                  // Change angle values here if needed
     int park_angle3 = 0;
 
 
-    int scoop_arm_angle_max = 120;            //Experimented angle values of the scooping arm for scooping operation. 
-    int scoop_arm_angle_min = 30;             // Change here if needed  
+    int scoop_arm_angle_max = 150;            //Experimented angle values of the scooping arm for scooping operation. 
+    int scoop_arm_angle_min = 60;             // Change here if needed  
 
 //    int pourAngle1= 90;                   //Defining experimented pouring angles
 //    int pourAngle2 = 120;                 //Change angle values here if required
@@ -112,12 +115,11 @@ void sysActiv()
     // int max_pos_angle1 = 90;              // Defining experimented positions of the servos  
     // int max_pos_angle2 = 120;             // At the active position
     // int max_pos_angle3 = 105;             // Change here only if needed
-  int intermediate_angle2 = 100;
   // Checking servo positions if those are already in the active positions
     if (curr_Angles[0] != activ_angle1 || curr_Angles[1] != activ_angle2 || curr_Angles[2] != activ_angle3)     
     {
 
-        for (int b2 = curr_Angles[1]; b2 <= intermediate_angle2; b2++)
+        for (int b2 = curr_Angles[1]; b2 <= interim_angle2; b2++)
         {
           servo2.write(b2);
           delay(50);
@@ -129,7 +131,7 @@ void sysActiv()
           delay(50);
         }
 
-        for (int b2 = intermediate_angle2; b2 <= activ_angle2; b2++)
+        for (int b2 = interim_angle2; b2 <= activ_angle2; b2++)
         {
           servo2.write(b2);
           delay(50);
@@ -171,7 +173,7 @@ void parking ()         //Call this function when system is going to park
 
         if (curr_Angles[1] > 90)
           {
-              for (int a2 = curr_Angles[1]; a2 >= 90; a2--)
+              for (int a2 = curr_Angles[1]; a2 >= interim_angle2; a2--)
                   {
                       servo2.write(a2);
                       delay(50);
@@ -179,7 +181,7 @@ void parking ()         //Call this function when system is going to park
           }
         else
           {
-              for (int a2 = curr_Angles[1]; a2 <= 90; a2++)
+              for (int a2 = curr_Angles[1]; a2 <= interim_angle2; a2++)
                   {
                       servo2.write(a2);
                       delay(50);
@@ -258,13 +260,12 @@ void pour ()
   //  int park_angle1 = 0;     //Pour angle at the beginning postion
   //  int pourAngle1= 90;
   //  int pourAngle2 = 120;
-  int intermediate_angle_arm2 = 100;
 
     if(scoopingAction == true)
     {
         Serial.println("Scooping done. Pouring now...");          
       //pour mechanism begin if condition is matched here
-        if (curr_Angles[0] == activ_angle1 && curr_Angles[1] = activ_angle2 && curr_Angles[2] == scoop_arm_angle_min)
+        if (curr_Angles[0] == activ_angle1 && curr_Angles[1] == activ_angle2 && curr_Angles[2] == scoop_arm_angle_min)
         {
           for (int i = activ_angle1; i>= park_angle1 ; i--)
           {
@@ -274,7 +275,7 @@ void pour ()
 
           delay(500);
 
-          for(int j = activ_angle2; j >= intermediate_angle_arm2; j--)
+          for(int j = activ_angle2; j >= interim_pour_angle2; j--)
           {
             servo2.write(j);
             delay(30);
@@ -288,7 +289,7 @@ void pour ()
             delay(40);
           }
 
-          for(int l = intermediate_angle_arm2; l <= activ_angle2; l++)
+          for(int l = interim_pour_angle2; l <= activ_angle2; l++)
           {
             servo2.write(l);
             delay(50);
@@ -379,11 +380,12 @@ void scooping_Handler()
       delay(1000);
       pour();
       delay(1000);
+      returnToActive();
 
     }
 }
 
-void emergency_handler()
+void emergency_Handler()
 {
   if (scoopingAction)
   {
