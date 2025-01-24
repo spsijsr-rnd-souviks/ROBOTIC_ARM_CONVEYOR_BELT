@@ -82,6 +82,38 @@ void setup()
   Serial.println("System initialized");
 
 }
+/*
+void loop() {
+
+    int buttonState = buttonStatus ();
+
+    switch (buttonState)
+    {
+        case 1:
+            if(count1 % 2 == 1){
+              sysActiv();
+            }
+            else{
+              parking();
+            }
+            //start_Stop_Handler();
+            break;
+
+        case 2:
+            scooping_Handler();
+            break;
+        
+        case 3:
+            emergency_Handler();
+            break;
+
+        default:
+            parking();
+            break;
+    }
+
+}
+*/
 
 void loop() {
 
@@ -106,9 +138,8 @@ void loop() {
             break;
     }
 
-
-
 }
+
 
 void sysActiv()
 {
@@ -152,7 +183,7 @@ void sysActiv()
 
     else
     {
-      Serial.println("An error occured");
+      Serial.println("Ready for scooping action");
     }
 }
 
@@ -194,7 +225,7 @@ void parking ()         //Call this function when system is going to park
                 delay(50);
         }
 
-        for (int a2 = 90; a2 >= park_angle2; a2--)
+        for (int a2 = interim_angle2; a2 >= park_angle2; a2--)
         {
             servo2.write(a2);
             delay(50);
@@ -336,6 +367,8 @@ int buttonStatus ()
     if (start_stop.isPressed())
     {
         status = 1;
+        systemActive =!systemActive;       // Toggle system active/deactive state
+
     }
 
     if (scoop_pour.isPressed())
@@ -354,8 +387,7 @@ int buttonStatus ()
 // Activate-Deactivate handler
 // Directly called into switch case in void loop
 void start_Stop_Handler()              
-{
-    systemActive =!systemActive;       // Toggle system active/deactive state 
+  { 
 
     if (systemActive == true)
     {
@@ -365,7 +397,7 @@ void start_Stop_Handler()
     {
         parking();
     }
-}
+  }
 
 // Scooping-pouring handler
 // Directly called in switch case in void loop
@@ -398,3 +430,4 @@ void emergency_Handler()
     returnToActive();
   }
 }
+
