@@ -114,7 +114,7 @@ void loop() {
 
 }
 */
-
+/*
 void loop() {
 
     int buttonState = buttonStatus ();
@@ -139,7 +139,48 @@ void loop() {
     }
 
 }
+*/
+/*
+void loop() {
+    int buttonState = buttonStatus(); // Get the button state
 
+    // Outer switch for primary button state handling
+    switch (buttonState) {
+        case 1: // Start/Stop button pressed
+            start_Stop_Handler();
+            
+            // Inner loop for additional functionality after activation
+            while (systemActive) {
+                int nestedButtonState = buttonStatus();
+
+                // Inner switch for nested handling
+                switch (nestedButtonState) {
+                    case 1:
+                        parking(); // Go to parking if Start/Stop is pressed again
+                        return;    // Exit the loop
+                        
+                    case 2:
+                        scooping_Handler(); // Handle scooping and pouring
+                        break;
+
+                    case 3:
+                        emergency_Handler(); // Handle emergency stop
+                        return;    // Exit the loop
+                        
+                    default:
+                        sysActiv(); // Stay active if no buttons are pressed
+                        break;
+                }
+            }
+            break;
+
+      
+        default: // Default case when no button is pressed
+            parking(); // System stays parked
+            break;
+    }
+}
+*/
 
 void sysActiv()
 {
