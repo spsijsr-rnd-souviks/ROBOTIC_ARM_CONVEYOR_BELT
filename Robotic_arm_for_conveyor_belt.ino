@@ -45,6 +45,9 @@ Servo servo3;
    unsigned int count2 = 0;                                
 
    int curr_Angles[3] = {0, 0, 0};
+   int count[3] = {0, 0, 0};
+
+   int status = 0;
 /*
    int angle1 = 0;
    int angle2 = 0;
@@ -65,6 +68,10 @@ void setup()
   start_stop.setDebounceTime(50);                           //Set button debounce time 50 ms (custom) for false click protection
   scoop_pour.setDebounceTime(50);
   emergency_stop.setDebounceTime(50);
+
+  start_stop.setCountMode(COUNT_FALLING);
+  scoop_pour.setCountMode(COUNT_FALLING);
+  emergency_stop.setCountMode(COUNT_FALLING);
 
   servo1.attach(5);                                      //Signal wire of servo-1 is connected to pin 5
   servo2.attach(6);                                      //Signal wire of servo-2 is connected to pin 6
@@ -114,7 +121,7 @@ void loop() {
 
 }
 */
-/*
+
 void loop() {
 
     int buttonState = buttonStatus ();
@@ -139,7 +146,7 @@ void loop() {
     }
 
 }
-*/
+
 /*
 void loop() {
     int buttonState = buttonStatus(); // Get the button state
@@ -399,7 +406,7 @@ void pour ()
 // Return button status as per the button is pressed
 int buttonStatus ()
   {
-    int status = 0;
+//    int status = 0;
 
     start_stop.loop();
     scoop_pour.loop();
