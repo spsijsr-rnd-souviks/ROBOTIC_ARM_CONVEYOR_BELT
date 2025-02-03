@@ -111,22 +111,28 @@ void loop()
 
         case SCOOPING:
             // Checks condition for start action
-            while (material_weight <= weight_threshold) 
+            if (material_weight < weight_threshold) 
             {
                 scooping();
-                Serial.println("Scooping complete!");
+                Serial.print("Scooping complete! | ");
+                material_weight += 5;
+                Serial.print("Item weight =");
+                Serial.println(material_weight);
                 currentState = POURING;
             }             
             
-            Serial.println("Threshold reached...");   // Prevents action if action button is pressed after it's complete
-            currentState = ACTIVE; 
+            else
+            {
+              Serial.println("Threshold reached...");   // Prevents action if action button is pressed after it's complete
+              currentState = ACTIVE; 
+            }
 
             break;
 
         case POURING:
             Serial.println("Pouring material...");
             pour();
-            material_weight += 5;
+//            material_weight += 5;
             delay(500);
             returnToActive();
 
@@ -149,6 +155,7 @@ void loop()
             Serial.println("Parking system...");
             parking();
             systemActive = false;           // Reset active state flag
+            material_weight = 0;            // Reset material weight for further scooping action
             currentState = IDLE;            // Reset state case
             break;
     }
@@ -197,9 +204,13 @@ void sysActiv()
 {
     Serial.println("Activating system...");
     moveServo(servo2, curr_Angles[1], interim_angle2, 50);
+    Serial.println("Servo2 responded");
     moveServo(servo3, curr_Angles[2], activ_angle3, 50);
+    Serial.println("Servo3 responded");
     moveServo(servo2, interim_angle2, activ_angle2, 50);
+    Serial.println("Servo2 responded again from intermediate");
     moveServo(servo1, curr_Angles[0], activ_angle1, 50);
+    Serial.println("Servo1 responded");
 
     curr_Angles[0] = activ_angle1;
     curr_Angles[1] = activ_angle2;
@@ -210,9 +221,13 @@ void parking()
 {
     Serial.println("Parking system...");
     moveServo(servo1, curr_Angles[0], park_angle1, 50);
+    Serial.println("Servo1 responded");
     moveServo(servo2, curr_Angles[1], interim_angle2, 30);
+    Serial.println("Servo2 responded");
     moveServo(servo3, curr_Angles[2], park_angle3, 50);
+    Serial.println("Servo3 responded");
     moveServo(servo2, interim_angle2, park_angle2, 40);
+    Serial.println("Servo2 responded from intermediate");
 
     curr_Angles[0] = park_angle1;
     curr_Angles[1] = park_angle2;
@@ -222,6 +237,7 @@ void parking()
 void scooping()
 {
   moveServo(servo3, scoop_arm_angle_min, scoop_arm_angle_max, 50);
+  Serial.println("Servo3 responded for scooping");
   scoopingAction = true;
 }
 
@@ -235,9 +251,12 @@ void pour()
 
     Serial.println("Pouring process...");
     moveServo(servo1, activ_angle1, park_angle1, 50);
+    Serial.println("Servo1 responded for pour");
     moveServo(servo2, activ_angle2, interim_pour_angle2, 30);
     moveServo(servo3, scoop_arm_angle_max, scoop_arm_angle_min, 40);
+    Serial.println("Servo3 responded for pour");
     moveServo(servo2, interim_pour_angle2, activ_angle2, 50);
+    Serial.println("Servo2 responded for pour");
 
     pouringStatus = true;
     Serial.println("Pouring complete.");
@@ -251,6 +270,7 @@ void returnToActive()
     moveServo(servo2, curr_Angles[1], activ_angle2, 50);
     moveServo(servo3, curr_Angles[2], activ_angle3, 50);
     moveServo(servo1, park_angle1, activ_angle1, 50);
+    Serial.println("System returned to ACTIVE...");
 }
 
 // ======================== Function to move servo ========================
