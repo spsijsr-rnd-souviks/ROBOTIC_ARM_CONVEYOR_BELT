@@ -307,22 +307,26 @@ void sysActiv()
 
 void parking() 
 {
-    Serial.println("Parking system...");
-    //lcd.setCursor(2, 0);
-    //lcd.print("parking");
-    //lcd.setCursor(2, 1);
-    //lcd.print("system");
-    //delay(2000);
+    if (curr_Angles[0] == park_angle1 || 
+        curr_Angles[1] == park_angle2 ||
+        curr_Angles[2] == park_angle3  )
+    {
+      Serial.println("System already parked");
+    }
+    else
+    {
+        Serial.println("Parking system...");
+        
+        moveServo(servo1, curr_Angles[0], park_angle1, 50);
+        Serial.println("Servo1 responded");
+        moveServo(servo2, curr_Angles[1], interim_angle2, 30);
+        Serial.println("Servo2 responded");
+        moveServo(servo3, curr_Angles[2], park_angle3, 50);
+        Serial.println("Servo3 responded");
+        moveServo(servo2, interim_angle2, park_angle2, 40);
+        Serial.println("Servo2 responded from intermediate");
+    }
     
-    moveServo(servo1, curr_Angles[0], park_angle1, 50);
-    Serial.println("Servo1 responded");
-    moveServo(servo2, curr_Angles[1], interim_angle2, 30);
-    Serial.println("Servo2 responded");
-    moveServo(servo3, curr_Angles[2], park_angle3, 50);
-    Serial.println("Servo3 responded");
-    moveServo(servo2, interim_angle2, park_angle2, 40);
-    Serial.println("Servo2 responded from intermediate");
-
     curr_Angles[0] = park_angle1;
     curr_Angles[1] = park_angle2;
     curr_Angles[2] = park_angle3;
