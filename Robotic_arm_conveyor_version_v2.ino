@@ -205,17 +205,33 @@ void loop()
             break;
 
         case PARKING:
-            Serial.println("Parking system...");
-            lcd.clear();
-            lcd.setCursor(0, 0);
-            lcd.print("Parking...");
-            //lcd.setCursor(2, 1);
-            //lcd.print("System");
-            parking();
-            systemActive = false;           // Reset active state flag
-            material_weight = 0;            // Reset material weight for further scooping action
-            currentState = IDLE;            // Reset state case
-            break;
+                if ( curr_Angles[0] == park_angle1 || 
+                     curr_Angles[1] == park_angle2 ||
+                     curr_Angles[2] == park_angle3  
+                    )
+                        {
+                            lcd.clear();
+                            lcd.setCursor(0,0);
+                            lcd.print("Already Parked");
+                            delay(1000);
+                            Serial.println("System already parked");
+                        }
+                    else
+                    {
+                        Serial.println("Parking system...");
+                        lcd.clear();
+                        lcd.setCursor(0, 0);
+                        lcd.print("Parking...");
+                        //lcd.setCursor(2, 1);
+                        //lcd.print("System");
+                        parking();
+                        systemActive = false;           // Reset active state flag
+                        material_weight = 0;            // Reset material weight for further scooping action
+                    }
+
+                    currentState = IDLE;            // Reset state case
+                    break;
+            
     }
 }
 
@@ -307,25 +323,16 @@ void sysActiv()
 
 void parking() 
 {
-    if (curr_Angles[0] == park_angle1 || 
-        curr_Angles[1] == park_angle2 ||
-        curr_Angles[2] == park_angle3  )
-    {
-      Serial.println("System already parked");
-    }
-    else
-    {
-        Serial.println("Parking system...");
+    Serial.println("Parking system...");
         
-        moveServo(servo1, curr_Angles[0], park_angle1, 50);
-        Serial.println("Servo1 responded");
-        moveServo(servo2, curr_Angles[1], interim_angle2, 30);
-        Serial.println("Servo2 responded");
-        moveServo(servo3, curr_Angles[2], park_angle3, 50);
-        Serial.println("Servo3 responded");
-        moveServo(servo2, interim_angle2, park_angle2, 40);
-        Serial.println("Servo2 responded from intermediate");
-    }
+    moveServo(servo1, curr_Angles[0], park_angle1, 50);
+    Serial.println("Servo1 responded");
+    moveServo(servo2, curr_Angles[1], interim_angle2, 30);
+    Serial.println("Servo2 responded");
+    moveServo(servo3, curr_Angles[2], park_angle3, 50);
+    Serial.println("Servo3 responded");
+    moveServo(servo2, interim_angle2, park_angle2, 40);
+    Serial.println("Servo2 responded from intermediate");
     
     curr_Angles[0] = park_angle1;
     curr_Angles[1] = park_angle2;
