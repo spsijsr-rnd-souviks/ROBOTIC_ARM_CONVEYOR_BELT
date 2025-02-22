@@ -38,7 +38,7 @@ int activ_angle3 = 60;
 
 int park_angle1 = 0; 
 int park_angle2 = 0; 
-int park_angle3 = 0;
+int park_angle3 = 160;
 
 int interim_angle2 = 45; 
 int interim_pour_angle2 = 90;     // This is set for smoother arm positioning
