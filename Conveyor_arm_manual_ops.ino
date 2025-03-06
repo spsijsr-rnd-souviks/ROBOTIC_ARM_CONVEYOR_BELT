@@ -33,7 +33,7 @@ State currentState = IDLE;
 
 // Experimented and tunned Servo angles
 int activ_angle1 = 140; 
-int activ_angle2 = 120; 
+int activ_angle2 = 117; 
 int activ_angle3 = 60;
 
 int park_angle1 = 0; 
@@ -61,10 +61,9 @@ int curr_Angles[3] = {0, 0, 0};
 
 void setup() 
 {
-    Serial.begin(9600);
+    //Serial.begin(9600);
     lcd.init();         // initialize the lcd
     lcd.backlight();    // Turn on the LCD screen backlight
-    Serial.println("Power ON");
     lcd.setCursor(1, 0);
     lcd.print("Power ON");
     delay(2000);
@@ -74,17 +73,16 @@ void setup()
     scoop_pour.setDebounceTime(50);
     stop_button.setDebounceTime(50);
 
-    servo1.attach(5);
-    servo2.attach(6);
+    servo1.attach(5);    
+    servo2.attach(6);    
     servo3.attach(9);
 
     servo1.write(park_angle1);
     servo2.write(park_angle2);
     servo3.write(park_angle3);
-   
+  
     delay(1000);
-
-    Serial.println("System initialized");
+    
     lcd.setCursor(2, 0);
     lcd.print("System ");
     lcd.setCursor(2, 1);
@@ -119,15 +117,14 @@ void loop()
     switch (currentState) 
     {
         case IDLE:
-
-            Serial.println("System is READY...");
+            //Serial.println("System is READY...");
             lcd.setCursor(0, 0);
             lcd.print("System is Ready  ");
             break;
 
         case ACTIVE:
 
-            Serial.println("System is ACTIVATED...");
+            //Serial.println("System is ACTIVATED...");
             lcd.setCursor(0, 0);
             lcd.print("SYSTEM ACTIVATED");
             break;
@@ -138,7 +135,7 @@ void loop()
             if (material_weight < weight_threshold) 
             {
                 scooping();
-                Serial.print("Scooping complete! | ");
+                //Serial.print("Scooping complete! | ");
 
             //  LCD display    
                 lcd.setCursor(0, 0);
@@ -148,8 +145,8 @@ void loop()
                
                 material_weight += 5;
 
-                Serial.print("Item weight =");
-                Serial.println(material_weight);
+                //Serial.print("Item weight =");
+                //Serial.println(material_weight);
                 
             // LCD display    
                 lcd.setCursor(12, 0);
@@ -217,7 +214,7 @@ void loop()
                             lcd.setCursor(0,0);
                             lcd.print("Already Parked");
                             delay(1000);
-                            Serial.println("System already parked");
+                            //Serial.println("System already parked");
                         }
                     else
                     {
@@ -310,9 +307,13 @@ void sysActiv()
     //delay(2000);
     
     moveServo(servo2, curr_Angles[1], interim_angle2, 50);
+    //Serial.println("Servo2 responded");
     moveServo(servo3, park_angle3, activ_angle3, 30);
+    //Serial.println("Servo3 responded");
     moveServo(servo2, interim_angle2, interim_angle2_up , 30);
+    //Serial.println("Servo2 responded again from intermediate");
     moveServo(servo1, curr_Angles[0], activ_angle1, 30);
+    //Serial.println("Servo1 responded");
     moveServo(servo2, interim_angle2_up, activ_angle2 , 40);
 
     curr_Angles[0] = activ_angle1;
@@ -324,13 +325,16 @@ void sysActiv()
 void parking() 
 {
     Serial.println("Parking system...");
-        
+
     moveServo(servo2, curr_Angles[1], interim_angle2_up, 30);    
     moveServo(servo1, curr_Angles[0], park_angle1, 30);
+    //Serial.println("Servo1 responded");
     moveServo(servo2, interim_angle2_up, interim_angle2, 40);
+    //Serial.println("Servo2 responded");
     moveServo(servo3, curr_Angles[2], park_angle3, 50);
+    //Serial.println("Servo3 responded");
     moveServo(servo2, interim_angle2, park_angle2, 40);
-
+    //Serial.println("Servo2 responded from intermediate");
     
     curr_Angles[0] = park_angle1;
     curr_Angles[1] = park_angle2;
@@ -344,7 +348,7 @@ void scooping()
   lcd.print("Scooping");
   lcd.setCursor(0, 1);
   lcd.print("Started...");
-  moveServo(servo3, scoop_arm_angle_min, scoop_arm_angle_max, 40);
+  moveServo(servo3, scoop_arm_angle_min, scoop_arm_angle_max, 50);
   //Serial.println("Servo3 responded for scooping");
   //lcd.setCursor(2, 0);
   //lcd.print("Scooping");
@@ -376,11 +380,14 @@ void pour()
     //lcd.print("process");
     //delay(2000);
     moveServo(servo2, activ_angle2, interim_angle2_up, 30);
-    moveServo(servo1, activ_angle1, park_angle1, 40);
+    moveServo(servo1, activ_angle1, park_angle1, 50);
+    //Serial.println("Servo1 responded for pour");
     moveServo(servo2, interim_angle2_up, interim_pour_angle2, 30);
-    moveServo(servo3, scoop_arm_angle_max, pour_angle3, 30);
+    moveServo(servo3, scoop_arm_angle_max, pour_angle3, 40);
+    //Serial.println("Servo3 responded for pour");
     moveServo(servo2, interim_pour_angle2, interim_angle2_up, 50);
     moveservo(servo3, pour_angle3, scoop_arm_angle_min, 30);
+    //Serial.println("Servo2 responded for pour");
    //  lcd.clear();
     pouringStatus = true;
     Serial.println("Pouring complete.");
@@ -399,6 +406,7 @@ void returnToActive()
     moveServo(servo3, curr_Angles[2], activ_angle3, 40);
     moveServo(servo1, park_angle1, activ_angle1, 50);
     moveServo(servo2, interim_angle2_up, activ_angle2, 40);
+    //Serial.println("System returned to ACTIVE...");
     lcd.setCursor(0, 0);
     lcd.print("System returened");
     lcd.setCursor(0, 1);
