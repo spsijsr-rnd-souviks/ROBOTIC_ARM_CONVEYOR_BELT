@@ -380,7 +380,7 @@ void pour()
     moveServo(servo2, interim_angle2_up, interim_pour_angle2, 30);
     moveServo(servo3, scoop_arm_angle_max, pour_angle3, 30);
     moveServo(servo2, interim_pour_angle2, interim_angle2_up, 50);
-    moveservo(servo3, pour_angle3, scoop_arm_angle_min, 30);
+    moveServo(servo3, pour_angle3, scoop_arm_angle_min, 30);
    //  lcd.clear();
     pouringStatus = true;
     Serial.println("Pouring complete.");
