@@ -4,10 +4,11 @@
 #include <LiquidCrystal_I2C.h>
 
 // Define buttons
-ezButton start_button(3);
-ezButton scoop_pour(4);
-ezButton stop_button(5);
-ezButton emergency_stop(2);
+ezButton activate_button(3);
+ezButton operation_button(4);
+ezButton stop_button(2);
+ezButton park_button(5);
+
 
 // set the LCD address to 0x27 for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x27, 16, 2); 
@@ -68,9 +69,9 @@ void setup()
     delay(2000);
     lcd.clear();
 
-    start_button.setDebounceTime(50);
-    scoop_pour.setDebounceTime(50);
-    stop_button.setDebounceTime(50);
+    activate_button.setDebounceTime(50);
+    operation_button.setDebounceTime(50);
+    park_button.setDebounceTime(50);
 
     servo1.attach(9);
     servo2.attach(10);
@@ -92,23 +93,23 @@ void setup()
 
 void loop() 
 {
-    start_button.loop();
-    scoop_pour.loop();
-    stop_button.loop();
+    activate_button.loop();
+    operation_button.loop();
+    park_button.loop();
 
 
   // Read button state 
-        if (start_button.isPressed())
+        if (activate_button.isPressed())
         {
           start_Handler();
         }
 
-        else if (scoop_pour.isPressed()) 
+        else if (operation_button.isPressed()) 
         {
           scooping_Handler();
         }
 
-        else if (stop_button.isPressed()) 
+        else if (park_button.isPressed()) 
         {
           parking_Handler();
         }
@@ -451,8 +452,8 @@ void systemReturn()
           while (millis() - previousMillis < delayTime) 
           {
               // Check emergency stop button
-              emergency_stop.loop();  // Ensure ezButton updates
-              if (emergency_stop.isPressed()) 
+              stop_button.loop();  // Ensure ezButton updates
+              if (stop_button.isPressed()) 
               {
                 // Update LCD display //
                   lcd.clear();
